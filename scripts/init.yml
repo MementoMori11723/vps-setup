@@ -29,7 +29,7 @@
 
     - name: Create a new sudo user
       user:
-        name: deploy
+        name: "{{ deploy_user }}"
         shell: /bin/bash
         groups: sudo,docker
         append: yes
