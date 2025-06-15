@@ -1,0 +1,36 @@
+---
+- name: Update, install packages, and create a user
+  hosts: vps
+  remote_user: root
+
+  tasks:
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade packages (dist-upgrade)
+      apt:
+        upgrade: dist
+
+    - name: Autoremove unnecessary packages
+      apt:
+        autoremove: yes
+
+    - name: Install Docker, Docker Compose, and UFW
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+          - build-essential
+          - make
+          - ufw
+        state: present
+        update_cache: yes
+
+    - name: Create a new sudo user
+      user:
+        name: deploy
+        shell: /bin/bash
+        groups: sudo,docker
+        append: yes
+        create_home: yes

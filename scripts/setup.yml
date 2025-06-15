@@ -1,0 +1,56 @@
+---
+- name: SSH Hardening and UFW Setup
+  hosts: vps
+  remote_user: deploy
+  become: yes
+
+  tasks:
+    - name: Harden SSH - Disable root login, password auth, and PAM
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        backup: yes
+      loop:
+        - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin no" }
+        - {
+            regexp: "^#?PasswordAuthentication",
+            line: "PasswordAuthentication no",
+          }
+        - { regexp: "^#?UsePAM", line: "UsePAM no" }
+        - {
+            regexp: "^#?PubkeyAuthentication",
+            line: "PubkeyAuthentication yes",
+          }
+
+    - name: Restart SSH service
+      service:
+        name: ssh
+        state: restarted
+
+    - name: Set UFW default policies
+      ufw:
+        policy: "{{ item.policy }}"
+        direction: "{{ item.direction }}"
+      loop:
+        - { policy: deny, direction: incoming }
+        - { policy: allow, direction: outgoing }
+
+    - name: Allow SSH (OpenSSH)
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Allow common ports (SSH, HTTP, HTTPS)
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - 80
+        - 443
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
