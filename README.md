@@ -2,7 +2,6 @@
 
 **Automate the setup and security hardening of a fresh Ubuntu VPS** with a single Ansible-based workflow. This project prepares your server for production by installing Docker, configuring a firewall, creating a non-root user with sudo permissions, and securing SSH.
 
----
 
 ## 📦 Features
 
@@ -12,21 +11,19 @@
 * 🔐 SSH hardening (disables root login and password authentication)
 * 🔥 UFW firewall configuration (only SSH, HTTP, HTTPS allowed)
 
----
 
 ## 📁 Project Structure
 
 ```bash
 .
-├── .env                 # Environment variables (optional)
-├── inventory.ini        # Ansible inventory file
+├── .env                 # Environment variables (need to create this file)
+├── inventory.ini        # Ansible inventory file (need to create this file)
 ├── Makefile             # Simplifies playbook execution
 ├── scripts/
 │   ├── init.yml         # Initial setup: system update, package install, user creation
 │   └── setup.yml        # SSH hardening, firewall setup
 ```
 
----
 
 ## 🧰 Prerequisites
 
@@ -36,7 +33,6 @@
 * SSH key pair (your public key will be added to the server)
 * `passlib` for password hashing if required (`pip install passlib`)
 
----
 
 ## ⚙️ Usage
 
@@ -45,22 +41,34 @@
 Edit `inventory.ini`:
 
 ```ini
-[vps_root]
-your.server.ip
+[vps]
+ansible_host=<your.server.ip>
+
+[vps:vars]
+deploy_user=<your-user-name>
+
+[vps_root:children]
+vps
 
 [vps_root:vars]
 ansible_ssh_user=root
+deploy_passwd=<your-hashed-password>
 
-[vps_deploy]
-your.server.ip
-
-[vps_deploy:vars]
-ansible_ssh_user=deploy
-deploy_passwd=your-hashed-password
+[vps_deploy:children]
+vps
 ```
 
-Replace `your.server.ip` with your actual VPS IP address.
-Update `deploy_passwd` with a secure password hash (see [Passlib Docs](https://passlib.readthedocs.io/en/stable/) for hashing).
+and
+
+Edit `.env`:
+
+```env
+HOST_SERVER=<your-user-name>@<your.server.ip>
+```
+
+Replace `<your.server.ip>` with your actual VPS IP address.
+And replace `<your-user-name>` with your new user name for VPS.
+Update `deploy_passwd` with a secure password hash.
 
 ---
 
@@ -100,7 +108,6 @@ ssh deploy@your.server.ip
 You should now be able to SSH using your key.
 Root login and password-based authentication are disabled for security.
 
----
 
 ## 🛡️ Security Overview
 
@@ -111,7 +118,6 @@ Root login and password-based authentication are disabled for security.
 | 🔥 UFW Rules      | Only allows ports 22 (SSH), 80 (HTTP), 443 (HTTPS) |
 | 🐳 Docker Access  | `deploy` added to Docker group                     |
 
----
 
 ## ♻️ Reinitialization
 
@@ -121,7 +127,6 @@ To reset and re-run everything:
 2. Ensure your SSH key is updated
 3. Run `make run` again
 
----
 
 ## 📜 License
 
@@ -137,7 +142,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 [Full license text here if not using LICENSE file directly]
 ```
 
----
 
 ## 🤝 Contributing
 
@@ -154,4 +158,3 @@ Let me know if you want:
 * Template for `deploy_passwd` generation using Ansible vault or Jinja
 
 Would you like this packaged into a GitHub repo template format too?
-
