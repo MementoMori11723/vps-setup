@@ -1,6 +1,6 @@
 ---
 - name: SSH Hardening and UFW Setup
-  hosts: vps
+  hosts: vps_deploy
   remote_user: deploy
   become: yes
 

@@ -1,6 +1,6 @@
 ---
 - name: Update, install packages, and create a user
-  hosts: vps
+  hosts: vps_root
   remote_user: root
 
   tasks:
@@ -34,3 +34,4 @@
         groups: sudo,docker
         append: yes
         create_home: yes
+        password: "{{ deploy_passwd }}"
