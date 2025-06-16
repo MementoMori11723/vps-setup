@@ -31,8 +31,7 @@
 * A freshly provisioned **Ubuntu VPS**
 * SSH access to the VPS (as `root`)
 * SSH key pair (your public key will be added to the server)
-* `passlib` for password hashing if required (`pip install passlib`)
-
+* Hashed password.
 
 ## ⚙️ Usage
 
@@ -90,7 +89,7 @@ This will:
 
 1. Update and upgrade the system
 2. Install required packages (Docker, Docker Compose, UFW)
-3. Create a new user (default: `deploy`) with:
+3. Create a new user with:
 
    * sudo access
    * Docker group membership
@@ -102,7 +101,7 @@ This will:
 ### 🔹 Step 3: SSH into Your Server
 
 ```bash
-ssh deploy@your.server.ip
+ssh <your-user-name>@<your.server.ip>
 ```
 
 You should now be able to SSH using your key.
@@ -116,7 +115,7 @@ Root login and password-based authentication are disabled for security.
 | 🔒 SSH Root Login | Disabled                                           |
 | 🔐 Password Auth  | Disabled (uses SSH keys only)                      |
 | 🔥 UFW Rules      | Only allows ports 22 (SSH), 80 (HTTP), 443 (HTTPS) |
-| 🐳 Docker Access  | `deploy` added to Docker group                     |
+| 🐳 Docker Access  | `<your-user-name>` added to Docker group           |
 
 
 ## ♻️ Reinitialization

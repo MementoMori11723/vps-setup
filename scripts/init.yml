@@ -35,3 +35,36 @@
         append: yes
         create_home: yes
         password: "{{ deploy_passwd }}"
+
+    - name: Disable swap
+      command: swapoff -a
+      ignore_errors: yes
+
+    - name: Remove existing swapfile
+      file:
+        path: /swapfile
+        state: absent
+
+    - name: Create 5GB swap file
+      command: fallocate -l 5G /swapfile
+
+    - name: Set correct permissions on swap file
+      file:
+        path: /swapfile
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Make swap file
+      command: mkswap /swapfile
+
+    - name: Enable swap file
+      command: swapon /swapfile
+
+    - name: Make swap permanent in /etc/fstab
+      mount:
+        name: none
+        src: /swapfile
+        fstype: swap
+        opts: sw
+        state: present
